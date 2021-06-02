@@ -22,7 +22,6 @@ public class WxPay  {
     private FlutterActivity flutterView;
     public static String filterName = "wxpayCallback";
     public static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println(intent.getStringExtra("result"));
@@ -35,9 +34,12 @@ public class WxPay  {
         api = WXAPIFactory.createWXAPI(flutterView, Constants.APP_ID,false);
         api.registerApp(Constants.APP_ID);
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(filterName);
+        IntentFilter intentFilter = new IntentFilter(filterName);
         flutterView.registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+     public  void  unregisterReceiver(){
+        flutterView.unregisterReceiver(broadcastReceiver);
     }
 
     public void Pay(@NonNull MethodCall call, @NonNull MethodChannel.Result result){

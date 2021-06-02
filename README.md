@@ -2,7 +2,7 @@
 
 A new Flutter plugin.
 
-## Getting Started
+## 集成
 
 ### Android支付宝
 1.由于alipay sdk使用的本地依赖，而且近期的gradle版本不推荐将android modules内的本地依赖直接编译到app工程中，所以需要配合修改原生工程
@@ -34,3 +34,61 @@ repositories {
 }
 ```
 
+### iOS支付宝
+
+1 插件使用cocodspod AlipaySDK-iOS,拷贝静态文件到app项目中，所以需要修改ios/podfile
+```ruby
+# 注释掉 use_frameworks!
+target 'Runner' do
+  # use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+```
+2 这一步不确定是否必须，在原生工程中添加相关依赖
+```
+在 Build Phases 选项卡的 Link Binary With Libraries 中，增加以下依赖：libc++.tbd、libz.tbd、SystemConfiguration.framework、CoreTelephony.framework、QuartzCore.framework、CoreText.framework、CoreGraphics.framework、UIKit.framework、Foundation.framework、CFNetwork.framework、CoreMotion.framework，最后还需要把AlipaySDK.framework也加入依赖库。
+
+
+作者：十三太饱
+链接：https://juejin.cn/post/6844903999829704717
+来源：掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+3. 支付回调
+
+```swift
+//appdelegate.swift
+import UIKit
+import Flutter
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+    // method channel
+    var channel:FlutterMethodChannel?
+
+
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+    //注册channel
+    channel = FlutterMethodChannel(name: "paybox", binaryMessenger: window.rootViewController as! FlutterViewController as! FlutterBinaryMessenger)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if(url.host == "safepay"){
+            AlipaySDK.defaultService().processOrder(withPaymentResult: url) { result in
+
+                //使用method channel 通知支付结果
+                self.channel?.invokeMethod("payResult", arguments:result)
+            }
+        }
+        return true
+    }
+
+}
+```

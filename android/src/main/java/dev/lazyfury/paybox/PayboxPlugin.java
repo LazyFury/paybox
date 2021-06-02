@@ -110,6 +110,7 @@ public class PayboxPlugin implements FlutterPlugin, MethodCallHandler, ActivityA
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
+    wxPay.unregisterReceiver();
   }
 
 }

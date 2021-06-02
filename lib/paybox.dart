@@ -10,7 +10,7 @@ class AlipayResult {
 
   AlipayResult(Map<String, String> res) {
     result = res["result"] ?? "";
-    status = res["status"] ?? "";
+    status = res["resultStatus"] ?? "";
     memo = res["memo"] ?? "";
   }
 }
