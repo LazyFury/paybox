@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/services.dart';
@@ -29,8 +28,7 @@ class Paybox {
     if (call.method == "payResult") {
       print(call.arguments);
       try {
-        var str = call.arguments.toString();
-        var _map = new Map<String, String>.from(jsonDecode(str));
+        var _map = new Map<String, String>.from(call.arguments);
         eventBus.fire(AlipayResult(_map));
       } catch (err) {
         print(err);

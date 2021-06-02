@@ -76,7 +76,7 @@ class AliPay{
 //            showAlert(PayDemoActivity.this, getString(R.string.pay_failed) + payResult);
                     }
                     System.out.println(payResult);
-                    channel.invokeMethod("payResult",payResult.toString());
+                    channel.invokeMethod("payResult",payResult);
                     break;
                 }
                 default:
