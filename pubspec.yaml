@@ -1,16 +1,16 @@
 name: paybox
 description: A new Flutter plugin.
-version: 0.0.1
-homepage: blog.abadboy.cn
+version: 0.0.2
+homepage: https://abadboy.cn
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  event_bus:
+  event_bus: ^2.0.0
 
 dev_dependencies:
   flutter_test:

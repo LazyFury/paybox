@@ -1,4 +1,5 @@
 #import "PayboxPlugin.h"
+#import "WXApi.h"
 #if __has_include(<paybox/paybox-Swift.h>)
 #import <paybox/paybox-Swift.h>
 #else
