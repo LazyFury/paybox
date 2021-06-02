@@ -66,6 +66,9 @@ end
 5. 支付回调
 
 ```swift
+//Runner-Bridging-Header.h
+#include <AlipaySDK/AlipaySDK.h>
+
 //appdelegate.swift
 import UIKit
 import Flutter

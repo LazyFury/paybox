@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.alipay.sdk.app.PayTask;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -30,14 +31,14 @@ class AliPay{
     private static final int SDK_PAY_FLAG = 1;
     private static final int SDK_AUTH_FLAG = 2;
     public void Pay(@NonNull MethodCall call, @NonNull MethodChannel.Result result){
-        final String orderInfo = (String)call.arguments;
-
+        final HashMap<String,String> config = (HashMap<String,String>)call.arguments;
+        final String orderInfo = config.get("orderInfo");
+        final Boolean isSandBox = config.get("sandbox") == "1";
         final Runnable payRunnable = new Runnable() {
-
             @Override
             public void run() {
                 PayTask alipay = new PayTask((Activity)flutterView);
-                Map<String, String> result = alipay.payV2(orderInfo, true);
+                Map<String, String> result = alipay.payV2(orderInfo, isSandBox);
 
                 Message msg = new Message();
                 msg.what = SDK_PAY_FLAG;

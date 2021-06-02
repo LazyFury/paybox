@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/services.dart';
@@ -39,13 +40,25 @@ class Paybox {
     return "";
   }
 
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-
-  static Future<dynamic> aliPay(String config) async {
-    return _channel.invokeMethod("alipay", config);
+  static Future<dynamic> aliPay(
+    String orderInfo, {
+    String urlScheme = "",
+    bool sandbox = false,
+  }) async {
+    if (Platform.isIOS) {
+      if (urlScheme.isEmpty) {
+        throw "请设置url scheme";
+      }
+    }
+    try {
+      return _channel.invokeMethod("alipay", {
+        "orderInfo": orderInfo,
+        "urlScheme": urlScheme,
+        "sandbox": sandbox ? "1" : ""
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   static Future<dynamic> wxPay(String config) async {

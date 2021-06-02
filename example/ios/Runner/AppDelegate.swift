@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     var channel:FlutterMethodChannel?
@@ -15,6 +16,7 @@ import Flutter
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if(url.host == "safepay"){
+            
             AlipaySDK.defaultService().processOrder(withPaymentResult: url) { result in
                 self.channel?.invokeMethod("payResult", arguments:result)
             }

@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Pay demo'),
     );
   }
 }
@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             MaterialButton(
               onPressed: () {
-                Paybox.aliPay("config");
+                Paybox.aliPay("config", urlScheme: "alipaydemo");
               },
               child: Text("alipay"),
             ),

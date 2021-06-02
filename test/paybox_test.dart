@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:paybox/paybox.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('paybox');
@@ -15,9 +14,5 @@ void main() {
 
   tearDown(() {
     channel.setMockMethodCallHandler(null);
-  });
-
-  test('getPlatformVersion', () async {
-    expect(await Paybox.platformVersion, '42');
   });
 }
