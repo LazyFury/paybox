@@ -91,11 +91,11 @@ import Flutter
 
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if(url.host == "safepay"){
-            AlipaySDK.defaultService().processOrder(withPaymentResult: url) { result in
-
-                //使用method channel 通知支付结果
+            AlipaySDK.defaultService().processOrder(withPaymentResult: url,standbyCallback: { result in
+                //standbyCallback 为nil时使用默认处理
+                //自定义处理，使用method channel 通知支付结果
                 self.channel?.invokeMethod("payResult", arguments:result)
-            }
+            })
         }
         return true
     }

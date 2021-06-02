@@ -17,9 +17,22 @@ public class SwiftPayboxPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if(call.method == "alipay"){
-        AlipaySDK.defaultService().payOrder("orderId=1", fromScheme: "suke1demo"){res in
-            //没有执行 需要在appdeleage响应结果
+//        let sandbox = false //ios不支持sandbox
+        guard let config = call.arguments  as? NSDictionary else {
+            result("参数错误")
+            return
         }
+        guard let orderInfo = config.value(forKey: "orderInfo") as? String else {
+            result("请输入订单配置参数")
+            return
+        }
+        guard let urlScheme = config.value(forKey: "urlScheme") as? String else {
+            result("请输入urlscheme")
+            return
+        }
+        AlipaySDK.defaultService().payOrder(orderInfo, dynamicLaunch: true, fromScheme: urlScheme, callback: {res in
+            SwiftPayboxPlugin._channel?.invokeMethod("payResult", arguments: res)
+        })
     }
     if(call.method == "wxpay"){
         let req = PayReq()
