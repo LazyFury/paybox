@@ -1,5 +1,6 @@
 package net.sourceforge.simcpux.wxapi;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import net.sourceforge.simcpux.Constants;
+import net.sourceforge.simcpux.WxConstants;
 import net.sourceforge.simcpux.GetFromWXActivity;
 
 import dev.lazyfury.paybox.PayboxPlugin;
@@ -32,6 +33,7 @@ import dev.lazyfury.paybox.WxPay;
 
 import net.sourceforge.simcpux.SendToWXActivity;
 import net.sourceforge.simcpux.ShowFromWXActivity;
+import net.sourceforge.simcpux.WxConstants;
 import net.sourceforge.simcpux.uikit.NetworkUtil;
 
 import org.json.JSONException;
@@ -55,26 +57,24 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 		@Override
 		public void handleMessage(Message msg) {
 			int tag = msg.what;
-			switch (tag) {
-				case NetworkUtil.GET_TOKEN: {
-					Bundle data = msg.getData();
-					JSONObject json = null;
-					try {
-						json = new JSONObject(data.getString("result"));
-						String openId, accessToken, refreshToken, scope;
-						openId = json.getString("openid");
-						accessToken = json.getString("access_token");
-						refreshToken = json.getString("refresh_token");
-						scope = json.getString("scope");
-						Intent intent = new Intent(wxEntryActivityWeakReference.get(), SendToWXActivity.class);
-						intent.putExtra("openId", openId);
-						intent.putExtra("accessToken", accessToken);
-						intent.putExtra("refreshToken", refreshToken);
-						intent.putExtra("scope", scope);
-						wxEntryActivityWeakReference.get().startActivity(intent);
-					} catch (JSONException e) {
-						Log.e(TAG, e.getMessage());
-					}
+			if (tag == NetworkUtil.GET_TOKEN) {
+				Bundle data = msg.getData();
+				JSONObject json = null;
+				try {
+					json = new JSONObject(data.getString("result"));
+					String openId, accessToken, refreshToken, scope;
+					openId = json.getString("openid");
+					accessToken = json.getString("access_token");
+					refreshToken = json.getString("refresh_token");
+					scope = json.getString("scope");
+					Intent intent = new Intent(wxEntryActivityWeakReference.get(), SendToWXActivity.class);
+					intent.putExtra("openId", openId);
+					intent.putExtra("accessToken", accessToken);
+					intent.putExtra("refreshToken", refreshToken);
+					intent.putExtra("scope", scope);
+					wxEntryActivityWeakReference.get().startActivity(intent);
+				} catch (JSONException e) {
+					Log.e(TAG, e.getMessage());
 				}
 			}
 		}
@@ -84,7 +84,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    	api = WXAPIFactory.createWXAPI(this, Constants.APP_ID, false);
+    	api = WXAPIFactory.createWXAPI(this, WxConstants.APP_ID, false);
 		handler = new MyHandler(this);
 
         try {
@@ -156,14 +156,15 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 
 		if (resp.getType() == ConstantsAPI.COMMAND_SUBSCRIBE_MESSAGE) {
 			SubscribeMessage.Resp subscribeMsgResp = (SubscribeMessage.Resp) resp;
-			String text = String.format("openid=%s\ntemplate_id=%s\nscene=%d\naction=%s\nreserved=%s",
+			@SuppressLint("DefaultLocale") String text = String.format("openid=%s\ntemplate_id=%s\nscene=%d\naction=%s\nreserved=%s",
 					subscribeMsgResp.openId, subscribeMsgResp.templateID, subscribeMsgResp.scene, subscribeMsgResp.action, subscribeMsgResp.reserved);
 
 			Toast.makeText(this, text, Toast.LENGTH_LONG).show();
 		}
 
         if (resp.getType() == ConstantsAPI.COMMAND_LAUNCH_WX_MINIPROGRAM) {
-            WXLaunchMiniProgram.Resp launchMiniProgramResp = (WXLaunchMiniProgram.Resp) resp;
+			assert resp instanceof WXLaunchMiniProgram.Resp;
+			WXLaunchMiniProgram.Resp launchMiniProgramResp = (WXLaunchMiniProgram.Resp) resp;
             String text = String.format("openid=%s\nextMsg=%s\nerrStr=%s",
                     launchMiniProgramResp.openId, launchMiniProgramResp.extMsg,launchMiniProgramResp.errStr);
 
@@ -171,7 +172,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
         }
 
         if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_VIEW) {
-            WXOpenBusinessView.Resp launchMiniProgramResp = (WXOpenBusinessView.Resp) resp;
+			assert resp instanceof WXOpenBusinessView.Resp;
+			WXOpenBusinessView.Resp launchMiniProgramResp = (WXOpenBusinessView.Resp) resp;
             String text = String.format("openid=%s\nextMsg=%s\nerrStr=%s\nbusinessType=%s",
                     launchMiniProgramResp.openId, launchMiniProgramResp.extMsg,launchMiniProgramResp.errStr,launchMiniProgramResp.businessType);
 
@@ -179,13 +181,15 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
         }
 
         if (resp.getType() == ConstantsAPI.COMMAND_OPEN_BUSINESS_WEBVIEW) {
-            WXOpenBusinessWebview.Resp response = (WXOpenBusinessWebview.Resp) resp;
-            String text = String.format("businessType=%d\nresultInfo=%s\nret=%d",response.businessType,response.resultInfo,response.errCode);
+			assert resp instanceof WXOpenBusinessWebview.Resp;
+			WXOpenBusinessWebview.Resp response = (WXOpenBusinessWebview.Resp) resp;
+            @SuppressLint("DefaultLocale") String text = String.format("businessType=%d\nresultInfo=%s\nret=%d",response.businessType,response.resultInfo,response.errCode);
 
             Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         }
 
 		if (resp.getType() == ConstantsAPI.COMMAND_SENDAUTH) {
+			assert resp instanceof SendAuth.Resp;
 			SendAuth.Resp authResp = (SendAuth.Resp)resp;
 			final String code = authResp.code;
 			NetworkUtil.sendWxAPI(handler, String.format("https://api.weixin.qq.com/sns/oauth2/access_token?" +
@@ -205,7 +209,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 	private void goToShowMsg(ShowMessageFromWX.Req showReq) {
 		WXMediaMessage wxMsg = showReq.message;		
 		WXAppExtendObject obj = (WXAppExtendObject) wxMsg.mediaObject;
-		
+
 		StringBuffer msg = new StringBuffer();
 		msg.append("description: ");
 		msg.append(wxMsg.description);
@@ -215,11 +219,11 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 		msg.append("\n");
 		msg.append("filePath: ");
 		msg.append(obj.filePath);
-		
+
 		Intent intent = new Intent(this, ShowFromWXActivity.class);
-		intent.putExtra(Constants.ShowMsgActivity.STitle, wxMsg.title);
-		intent.putExtra(Constants.ShowMsgActivity.SMessage, msg.toString());
-		intent.putExtra(Constants.ShowMsgActivity.BAThumbData, wxMsg.thumbData);
+		intent.putExtra(WxConstants.ShowMsgActivity.STitle, wxMsg.title);
+		intent.putExtra(WxConstants.ShowMsgActivity.SMessage, msg.toString());
+		intent.putExtra(WxConstants.ShowMsgActivity.BAThumbData, wxMsg.thumbData);
 		startActivity(intent);
 
 		System.out.println(wxMsg);

@@ -20,8 +20,8 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 class AliPay{
-    private FlutterActivity flutterView;
-    private MethodChannel channel;
+    private final FlutterActivity flutterView;
+    private final MethodChannel channel;
 
     AliPay(FlutterActivity flutterView,MethodChannel channel){
         this.flutterView = flutterView;
@@ -31,9 +31,9 @@ class AliPay{
     private static final int SDK_PAY_FLAG = 1;
     private static final int SDK_AUTH_FLAG = 2;
     public void Pay(@NonNull MethodCall call, @NonNull MethodChannel.Result result){
-        final HashMap<String,String> config = (HashMap<String,String>)call.arguments;
-        final String orderInfo = config.get("orderInfo");
-        final Boolean isSandBox = config.get("sandbox") == "1";
+        final HashMap config = (HashMap)call.arguments;
+        final String orderInfo = (String) config.get("orderInfo");
+        final Boolean isSandBox = (Boolean) config.get("sandbox");
         final Runnable payRunnable = new Runnable() {
             @Override
             public void run() {
@@ -55,12 +55,10 @@ class AliPay{
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
         @SuppressWarnings("unused")
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SDK_PAY_FLAG: {
-//                    PayResult payResult = new PayResult();
+            if (msg.what == SDK_PAY_FLAG) {//                    PayResult payResult = new PayResult();
 //                    /**
 //                     * 对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
 //                     */
@@ -75,13 +73,9 @@ class AliPay{
 //                        // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
 ////            showAlert(PayDemoActivity.this, getString(R.string.pay_failed) + payResult);
 //                    }
-
-                    System.out.println((Map<String, String>) msg.obj);
-                    channel.invokeMethod("payResult",(Map<String, String>) msg.obj);
-                    break;
-                }
-                default:
-                    break;
+                PayResult payResult = new PayResult((Map<String, String>) msg.obj);
+                System.out.println(payResult);
+                channel.invokeMethod("alipayResult", payResult.toMap());
             }
         };
     };

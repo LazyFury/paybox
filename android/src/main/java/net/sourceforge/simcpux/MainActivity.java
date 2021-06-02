@@ -30,14 +30,14 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 		checkPermission();
-    	api = WXAPIFactory.createWXAPI(this, Constants.APP_ID, false);
+    	api = WXAPIFactory.createWXAPI(this, WxConstants.APP_ID, false);
 
     	regBtn = (Button) findViewById(R.id.reg_btn);
     	regBtn.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-			    api.registerApp(Constants.APP_ID);
+			    api.registerApp(WxConstants.APP_ID);
 			}
 		});
     	
@@ -98,7 +98,7 @@ public class MainActivity extends Activity{
 		if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this,
 					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					Constants.PERMISSIONS_REQUEST_STORAGE);
+					WxConstants.PERMISSIONS_REQUEST_STORAGE);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class MainActivity extends Activity{
 	public void onRequestPermissionsResult(int requestCode,
 										   String permissions[], int[] grantResults) {
 		switch (requestCode) {
-			case Constants.PERMISSIONS_REQUEST_STORAGE: {
+			case WxConstants.PERMISSIONS_REQUEST_STORAGE: {
 				if (grantResults.length > 0
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				} else {

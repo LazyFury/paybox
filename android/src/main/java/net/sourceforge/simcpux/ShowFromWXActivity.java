@@ -20,9 +20,9 @@ public class ShowFromWXActivity extends Activity {
 
 	private void initView() {
 
-		final String title = getIntent().getStringExtra(Constants.ShowMsgActivity.STitle);
-		final String message = getIntent().getStringExtra(Constants.ShowMsgActivity.SMessage);
-		final byte[] thumbData = getIntent().getByteArrayExtra(Constants.ShowMsgActivity.BAThumbData);
+		final String title = getIntent().getStringExtra(WxConstants.ShowMsgActivity.STitle);
+		final String message = getIntent().getStringExtra(WxConstants.ShowMsgActivity.SMessage);
+		final byte[] thumbData = getIntent().getByteArrayExtra(WxConstants.ShowMsgActivity.BAThumbData);
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(title);

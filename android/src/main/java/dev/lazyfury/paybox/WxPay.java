@@ -12,30 +12,67 @@ import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import net.sourceforge.simcpux.Constants;
+import net.sourceforge.simcpux.WxConstants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 public class WxPay  {
-    private FlutterActivity flutterView;
+    private final FlutterActivity flutterView;
     public static String filterName = "wxpayCallback";
-    public static BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+    private static class XBroadcastReceiver extends BroadcastReceiver {
+        private final MethodChannel channel;
+
+        public XBroadcastReceiver(MethodChannel channel){
+            this.channel = channel;
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println(intent.getStringExtra("result"));
+            String result = intent.getStringExtra("result");
+            int status = intent.getIntExtra("errCode",0);
+            String memo = intent.getStringExtra("memo");
+            PayResult payResult = new PayResult(result,String.valueOf(status),memo);
+            System.out.println(payResult);
+            try {
+                channel.invokeMethod("wxpayResult",payResult.toMap());
+            }catch (Exception e){
+                System.out.println(e);
+            }
+//        if(instance!=null)instance.channel.invokeMethod("wxpayResult",);
         }
-    };
+    }
+
+    public static XBroadcastReceiver broadcastReceiver;
+
+
 
     IWXAPI api;
-    WxPay(FlutterActivity flutterView){
+    WxPay(FlutterActivity flutterView,MethodChannel channel){
         this.flutterView = flutterView;
-        api = WXAPIFactory.createWXAPI(flutterView, Constants.APP_ID,false);
-        api.registerApp(Constants.APP_ID);
+        broadcastReceiver = new XBroadcastReceiver(channel);
+    }
 
+    public  void register(@NonNull MethodCall call, @NonNull MethodChannel.Result result){
+        HashMap config = (HashMap)call.arguments;
+//        set appid
+        String appid = (String) config.get("appid");
+        WxConstants.APP_ID = appid;
+//        init wx api
+        api = WXAPIFactory.createWXAPI(flutterView, WxConstants.APP_ID, true);
+//        reg wx app
+        api.registerApp(WxConstants.APP_ID);
+
+//        注册广播，接受支付回调
         IntentFilter intentFilter = new IntentFilter(filterName);
         flutterView.registerReceiver(broadcastReceiver,intentFilter);
+        result.success("ok");
     }
 
      public  void  unregisterReceiver(){
@@ -43,14 +80,15 @@ public class WxPay  {
     }
 
     public void Pay(@NonNull MethodCall call, @NonNull MethodChannel.Result result){
+        HashMap<String,String> config = (HashMap<String,String>)call.arguments;
         PayReq req = new PayReq();
-        req.appId           = "wx8888888888888888";//你的微信appid
-        req.partnerId       = "1900000109";//商户号
-        req.prepayId        = "WX1217752501201407033233368018";//预支付交易会话ID
-        req.nonceStr        = "5K8264ILTKCH16CQ2502SI8ZNMTM67VS";//随机字符串
-        req.timeStamp       = "1412000000";//时间戳
-        req.packageValue    = "Sign=WXPay";//扩展字段,这里固定填写Sign=WXPay
-        req.sign            = "C380BEC2BFD727A4B6845133519F3AD6";//签名
+        req.appId           = config.get("appId");//你的微信appid
+        req.partnerId       = config.get("partnerId");//商户号
+        req.prepayId        = config.get("prepayId");//预支付交易会话ID
+        req.nonceStr        = config.get("nonceStr");//随机字符串
+        req.timeStamp       = config.get("timeStamp");//时间戳
+        req.packageValue    = config.get("package");//"Sign=WXPay" //扩展字段,这里固定填写Sign=WXPay
+        req.sign            = config.get("sign");//签名
         api.sendReq(req);
     }
 }

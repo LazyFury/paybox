@@ -31,7 +31,7 @@ public class SwiftPayboxPlugin: NSObject, FlutterPlugin {
             return
         }
         AlipaySDK.defaultService().payOrder(orderInfo, dynamicLaunch: true, fromScheme: urlScheme, callback: {res in
-            SwiftPayboxPlugin._channel?.invokeMethod("payResult", arguments: res)
+            SwiftPayboxPlugin._channel?.invokeMethod("alipayResult", arguments: res)
         })
     }
     if(call.method == "wxpay"){

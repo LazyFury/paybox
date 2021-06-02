@@ -102,3 +102,7 @@ import Flutter
 
 }
 ```
+
+
+### android 微信
+无需操作

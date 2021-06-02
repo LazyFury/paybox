@@ -19,7 +19,7 @@ import dev.lazyfury.paybox.R;
 
 public class SubscribeMiniProgramMsgActivity extends Activity {
 
-    private IWXAPI api = WXAPIFactory.createWXAPI(this, Constants.APP_ID,false);
+    private IWXAPI api = WXAPIFactory.createWXAPI(this, WxConstants.APP_ID,false);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

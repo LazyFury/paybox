@@ -25,27 +25,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-//支付宝
-import com.alipay.sdk.app.PayTask;
-import com.tencent.mm.opensdk.constants.ConstantsAPI;
-import com.tencent.mm.opensdk.modelbase.BaseReq;
-import com.tencent.mm.opensdk.modelbase.BaseResp;
-import com.tencent.mm.opensdk.modelbiz.SubscribeMessage;
-import com.tencent.mm.opensdk.modelbiz.WXLaunchMiniProgram;
-import com.tencent.mm.opensdk.modelbiz.WXOpenBusinessView;
-import com.tencent.mm.opensdk.modelbiz.WXOpenBusinessWebview;
-import com.tencent.mm.opensdk.modelmsg.SendAuth;
-import com.tencent.mm.opensdk.modelmsg.ShowMessageFromWX;
-import com.tencent.mm.opensdk.modelpay.PayReq;
-import com.tencent.mm.opensdk.openapi.IWXAPI;
-import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-
-import net.sourceforge.simcpux.Constants;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 /** PayboxPlugin */
 public class PayboxPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -56,7 +35,7 @@ public class PayboxPlugin implements FlutterPlugin, MethodCallHandler, ActivityA
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private MethodChannel channel;
+  public static MethodChannel channel;
   private FlutterActivity flutterView;
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -70,7 +49,7 @@ public class PayboxPlugin implements FlutterPlugin, MethodCallHandler, ActivityA
   public void onAttachedToActivity(ActivityPluginBinding binding){
     flutterView =  (FlutterActivity) binding.getActivity();
     aliPay = new AliPay(flutterView,channel);
-    wxPay = new WxPay(flutterView);
+    wxPay = new WxPay(flutterView,channel);
   }
 
   @Override
@@ -96,6 +75,10 @@ public class PayboxPlugin implements FlutterPlugin, MethodCallHandler, ActivityA
     }
     if (call.method.equals("alipay")){
       aliPay.Pay(call,result);
+      return;
+    }
+    if (call.method.equals("wxpayInit")){
+      wxPay.register(call,result);
       return;
     }
     if (call.method.equals("wxpay")){

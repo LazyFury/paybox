@@ -35,7 +35,7 @@ public class GetFromWXActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		// acquire wxapi
-		api = WXAPIFactory.createWXAPI(this, Constants.APP_ID,false);
+		api = WXAPIFactory.createWXAPI(this, WxConstants.APP_ID,false);
 		bundle = getIntent().getExtras();
 
 		setContentView(R.layout.get_from_wx);

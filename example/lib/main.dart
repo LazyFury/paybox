@@ -50,21 +50,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late StreamSubscription alipayListen;
-
+  late StreamSubscription wxpayListen;
   @override
   void initState() {
     super.initState();
 
     // 支付宝支付回调
     alipayListen = Paybox.eventBus.on<AlipayResult>().listen((event) {
-      print(event.memo);
+      print("ali:" + event.memo + event.status);
     });
+
+    wxpayListen = Paybox.eventBus.on<WxPayResult>().listen((event) {
+      print("wx:" + event.result + event.status);
+    });
+
+    Paybox.wxpayInit("123123132");
   }
 
   @override
   void dispose() {
     super.dispose();
     alipayListen.cancel();
+    wxpayListen.cancel();
   }
 
   @override
@@ -89,6 +96,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 Paybox.aliPay("config", urlScheme: "alipaydemo");
               },
               child: Text("alipay"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                Paybox.wxPay(WxPayConfig(
+                    appId: "appId",
+                    partnerId: "partnerId",
+                    prepayId: "prepayId",
+                    nonceStr: "nonceStr",
+                    timeStamp: "timeStamp",
+                    sign: "sign"));
+              },
+              child: Text("wxpay"),
             ),
           ],
         ),
