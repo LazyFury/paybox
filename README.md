@@ -56,7 +56,14 @@ end
 来源：掘金
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
-3. 支付回调
+3.添加app scheme url
+![https://tva1.sinaimg.cn/large/008i3skNgy1gr457scihkj31no0q641u.jpg](https://tva1.sinaimg.cn/large/008i3skNgy1gr457scihkj31no0q641u.jpg)
+在发起支付的时候需要传入，用户支付宝处理完成逻辑之后返回app
+
+4.添加后台能力(似乎是在唤醒微信的似乎需要，没有测试)
+![https://tva1.sinaimg.cn/large/008i3skNgy1gr45c93v72j31900tqade.jpg](https://tva1.sinaimg.cn/large/008i3skNgy1gr45c93v72j31900tqade.jpg)
+
+5. 支付回调
 
 ```swift
 //appdelegate.swift
