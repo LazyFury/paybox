@@ -2,7 +2,7 @@ import UIKit
 import Flutter
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate,WXApiDelegate {
     var channel:FlutterMethodChannel?
   override func application(
     _ application: UIApplication,
@@ -19,6 +19,33 @@ import Flutter
             AlipaySDK.defaultService().processOrder(withPaymentResult: url, standbyCallback:    nil)
         }
         return true
+    }
+    
+    func onResp(_ resp: BaseResp) {
+        let map = NSDictionary();
+        var result = ""
+        switch resp.type {
+        case 0:
+            result = "成功"
+        case -1:
+            result = "一般错误"
+        case -2:
+            result = "用户取消"
+        case -3:
+            result = "发送失败"
+        case -4:
+            result = "认证失败"
+        case -5:
+            result = "不支持错误"
+        case -6:
+            result = "被屏蔽所有操作，可能由于签名不正确或无权限"
+        default:
+            result = "未知错误"
+        }
+        map.setValue(result, forKey: "result")
+        map.setValue(resp.errCode, forKey: "status")
+        map.setValue(resp.errStr, forKey: "memo")
+        channel?.invokeMethod("wxpayResult", arguments: resp)
     }
     
 }

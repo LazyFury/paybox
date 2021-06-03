@@ -119,12 +119,12 @@ class Paybox {
     return _channel.invokeMethod("wxpay", config.toMap());
   }
 
-  static Future<dynamic> wxpayInit(
-    String appid,
-  ) async {
+  static Future<dynamic> wxpayInit(String appid,
+      {String? universalLink}) async {
     try {
       return _channel.invokeMethod("wxpayInit", {
         "appid": appid,
+        "universalLink": universalLink,
       });
     } catch (err) {
       throw err;

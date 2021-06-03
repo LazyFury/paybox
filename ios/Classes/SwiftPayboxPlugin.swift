@@ -33,17 +33,38 @@ public class SwiftPayboxPlugin: NSObject, FlutterPlugin {
         AlipaySDK.defaultService().payOrder(orderInfo, dynamicLaunch: true, fromScheme: urlScheme, callback: {res in
             SwiftPayboxPlugin._channel?.invokeMethod("alipayResult", arguments: res)
         })
+        result("success")
+    }
+    if(call.method == "wxpayInit"){
+        guard let config = call.arguments as? NSDictionary else {
+            result("参数错误")
+            return
+        }
+        guard  let appid = config.value(forKey: "appid") as? String else {
+            result("请输入appid")
+            return
+        }
+        guard let universalLink = config.value(forKey: "universalLink") as? String else {
+            result("请输入universalLink")
+            return
+        }
+        WXApi.registerApp(appid, universalLink: universalLink)
+        result("success")
     }
     if(call.method == "wxpay"){
+        guard let config = call.arguments as? NSDictionary else {
+            result("参数错误")
+            return
+        }
         let req = PayReq()
-
-        req.partnerId = "123132"
-        req.nonceStr = "1231"
-        req.package = "123132"
-        req.prepayId = "123132"
-        req.timeStamp = 123
-        req.sign = "123132"
+        req.partnerId = config.value(forKey: "partnerId") as! String
+        req.nonceStr = config.value(forKey: "nonceStr") as! String
+        req.package = config.value(forKey: "package") as! String
+        req.prepayId = config.value(forKey: "prepayId") as! String
+        req.timeStamp = config.value(forKey: "timeStamp") as! UInt32
+        req.sign = config.value(forKey: "sign") as! String
         WXApi.send(req) { ok in
+//            这一句测试没执行
             result(ok)
         }
 

@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print("wx:" + event.result + event.status);
     });
 
-    Paybox.wxpayInit("123123132");
+    Paybox.wxpayInit("123123132", universalLink: "");
   }
 
   @override
@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     partnerId: "partnerId",
                     prepayId: "prepayId",
                     nonceStr: "nonceStr",
-                    timeStamp: "timeStamp",
+                    timeStamp: "123131",
                     sign: "sign"));
               },
               child: Text("wxpay"),
