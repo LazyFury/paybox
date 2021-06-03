@@ -106,3 +106,113 @@ import Flutter
 
 ### android 微信
 无需操作
+
+### iOS微信
+
+```swift
+//Runner-Bridging-Header.h
+#include "WXApi.h"
+
+
+//AppDelegate.swift
+import UIKit
+import Flutter
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate,WXApiDelegate {
+    var channel:FlutterMethodChannel?
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+    channel = FlutterMethodChannel(name: "paybox", binaryMessenger: window.rootViewController as! FlutterViewController as! FlutterBinaryMessenger)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      //支付宝回调
+        if(url.host == "safepay"){
+//            standbyCallback 为nil是使用默认paybox回调
+            AlipaySDK.defaultService().processOrder(withPaymentResult: url, standbyCallback:    nil)
+        }
+        return true
+    }
+
+
+  //<!-- 微信支付回调 -->  appdelegate 需要继承 WXApiDelegate
+    func onResp(_ resp: BaseResp) {
+        let map = NSDictionary();
+        var result = ""
+        switch resp.type {
+        case 0:
+            result = "成功"
+        case -1:
+            result = "一般错误"
+        case -2:
+            result = "用户取消"
+        case -3:
+            result = "发送失败"
+        case -4:
+            result = "认证失败"
+        case -5:
+            result = "不支持错误"
+        case -6:
+            result = "被屏蔽所有操作，可能由于签名不正确或无权限"
+        default:
+            result = "未知错误"
+        }
+        map.setValue(result, forKey: "result")
+        map.setValue(resp.errCode, forKey: "status")
+        map.setValue(resp.errStr, forKey: "memo")
+        channel?.invokeMethod("wxpayResult", arguments: resp)
+    }
+
+}
+
+
+```
+
+
+## 使用
+
+dart 代码
+
+```dart
+  //支付宝支付,orderinfo拼接为字符串
+  Paybox.aliPay("appid=123&orderId=233", urlScheme: "alipaydemo");
+
+
+  //初始化微信支付 传入appid ,universalLink 替代scheme ios only
+  Paybox.wxpayInit("123123132",universalLink:"");
+
+  //使用微信支付
+  Paybox.wxPay(WxPayConfig(
+                    appId: "appId",
+                    partnerId: "partnerId",
+                    prepayId: "prepayId",
+                    nonceStr: "nonceStr",
+                    timeStamp: "123131",
+                    sign: "sign"));
+
+
+
+
+```
+### 回调
+使用eventBus回调需要在 app pubspec.yaml 中添加 event_bus 库
+
+借助methodChannel似乎可以实现promise方式回调，但是原生实现各不相同（支付宝android Runnable Thread,微信注册了activity需要借助广播通知，ios需要在入口appdelegate.swift接收
+```dart
+
+  // 支付宝支付回调
+    var alipayListen = Paybox.eventBus.on<AlipayResult>().listen((event) {
+      print("ali:" + event.memo + event.status);
+    });
+
+//微信支付回调
+    var wxpayListen = Paybox.eventBus.on<WxPayResult>().listen((event) {
+      print("wx:" + event.result + event.status);
+    });
+
+```
