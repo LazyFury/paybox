@@ -108,7 +108,9 @@ import Flutter
 无需操作
 
 ### iOS微信
+1.info.plist 添加LSApplicationQueriesSchemes array类型 weixinULAPI,wechat,weixin
 
+2.swift代码
 ```swift
 //Runner-Bridging-Header.h
 #include "WXApi.h"
