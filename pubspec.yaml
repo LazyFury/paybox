@@ -1,7 +1,7 @@
 name: paybox
-description: A new Flutter plugin.
+description: alipay & wechat pay flutter plugin,微信支付，支付宝支付flutter插件\ 由于仍然需要在本机原生工程中做一些工作，所以推荐去github download项目自行修改或者作为集成参考使用
 version: 0.0.6
-homepage: https://abadboy.cn
+homepage: https://blog.abadboy.cn
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

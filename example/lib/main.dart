@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:paybox/paybox.dart';
+import './payDialog.dart';
 
 void main() {
   runApp(MyApp());
@@ -64,7 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print("wx:" + event.result + event.status);
     });
 
-    Paybox.wxpayInit("123123132", universalLink: "");
+    Paybox.wxpayInit("123123132",
+        universalLink: "https://example.com/appStoreLink");
   }
 
   @override
@@ -88,28 +90,31 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            MaterialButton(
-              onPressed: () {
-                Paybox.aliPay("config", urlScheme: "alipaydemo");
-              },
-              child: Text("alipay"),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Paybox.wxPay(WxPayConfig(
-                    appId: "appId",
-                    partnerId: "partnerId",
-                    prepayId: "prepayId",
-                    nonceStr: "nonceStr",
-                    timeStamp: "123131",
-                    sign: "sign"));
-              },
-              child: Text("wxpay"),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MaterialButton(
+                    color: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      ShowDialog(context);
+                    },
+                    child: Text(
+                      "提交订单",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       // floatingActionButton: FloatingActionButton(
