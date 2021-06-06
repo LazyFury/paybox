@@ -1,3 +1,5 @@
+### 0.0.7
+* fix example
 ### 0.0.6
 * 添加LSApplicationQueriesSchemes
 ### 0.0.5
